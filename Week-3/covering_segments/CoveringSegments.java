@@ -1,6 +1,12 @@
 import java.lang.Integer;
 import java.util.*;
 
+
+/**
+ * To collect maximum signatures from  a society, we want to go min. no. of times.
+ * Solution: Sort the segments depending on end time. Then go to each segment and check what all segments fall on that end point.
+ * Don't go to those segemnts which are covered again.
+ */
 public class CoveringSegments {
     private static class Segment {
         int start, end;
