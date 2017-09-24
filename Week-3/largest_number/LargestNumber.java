@@ -1,6 +1,7 @@
 import java.util.*;
 
 // Follow the pseduo code written in the assignment
+// TODO: Try the Arrays.sort and implement the comparator yourself for O(nlogn)
 public class LargestNumber {
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
