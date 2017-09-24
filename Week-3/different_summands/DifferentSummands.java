@@ -1,59 +1,38 @@
- /**
- * Created by 11151 on 24/09/17.
- */
- import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Scanner;
 
 /**
  * We have 'n' candies which are to be distributed to max. no. of children given that no 2 children get same no. of
  * candies. How many children will get candies ?
- * Solution:
+ * @author Neophy
+ * Solution: As explained in the lemma in the instruction page of course
+ * @link https://medium.com/competitive/pairwise-distinct-summands-9ef4e8686b17
  */
+
 public class DifferentSummands {
-    public static Stack<Long> summands = new Stack<>();
+    private static List<Integer> optimalSummands(int n) {
+        List<Integer> summands = new ArrayList<Integer>();
+        for (int k = n, l =1; k > 0 ; l++) {
+            if (k<=2*l) {
+                summands.add(k);
+                k -=k;
+            } else {
+                summands.add(l);
+                k -= l;
+            }
+        }
+        return summands;
+    }
+
     public static void main(String[] args) {
         Scanner scanner = new Scanner(System.in);
-        Long n = scanner.nextLong();
-
-        // Summands should be stored as Set as Set has distinct elements
-        Long sum = 0l;
-        optimalSummands( n, sum);
+        int n = scanner.nextInt();
+        List<Integer> summands = optimalSummands(n);
         System.out.println(summands.size());
-        Iterator<Long> ite = summands.iterator();
-        Long summand;
-        while (ite.hasNext()) {
-            summand = ite.next();
+        for (Integer summand : summands) {
             System.out.print(summand + " ");
         }
     }
-
-    private static boolean optimalSummands(Long n, Long sum) {
-        // Base cases
-        if(sum.compareTo(n)==0){
-            return true;
-        }
-
-        if(sum.compareTo(n)>0) {
-            return false;
-        }
-
-        Long lastNum;
-        if(summands.size()>0) {
-            lastNum = summands.peek();
-        } else {
-            lastNum = 0l;
-        }
-
-        for(Long nextNum = lastNum+1; (sum+nextNum)<=n;) {
-            sum = sum+nextNum;
-            summands.add(nextNum);
-            boolean ans = optimalSummands(n, sum);
-            if(ans==true){
-                return true;
-            }
-            sum = sum-nextNum;
-            summands.pop();
-            nextNum = nextNum+1;
-        }
-        return false;
-    }
 }
+
