@@ -3,8 +3,8 @@ import java.util.*;
 
 public class BinarySearch {
     // a is the array in which we have to search
-    // x is the key which we have to search in array a
-    // return the index of x in array a if present else return -1
+    // key with which we have to search in array a
+    // return the index of key in array a if present else return -1
     static int search(long[] a, long key) {
         int left = 0;
         int right = a.length -1;
