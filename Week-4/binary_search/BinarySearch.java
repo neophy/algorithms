@@ -15,6 +15,7 @@ public class BinarySearch {
     }
 
     static int binarySearch (long[]a, int left, int right, long key) {
+        // I was making mistake in adding 'left' to the below equation
         int middle = left + (right-left)/2;
         // Base case
         if (left > right) {
