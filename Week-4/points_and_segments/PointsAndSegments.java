@@ -1,3 +1,5 @@
+import java.lang.System;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Scanner;
@@ -36,10 +38,13 @@ public class PointsAndSegments {
         int[] mergedArray = new int[starts.length + ends.length + points.length];
         getMergedarray(mergedArray, starts, ends, points);
         //Step-2: Sort the merged array
-        quickSort(mergedArray, 0, mergedArray.length - 1);
+        Arrays.sort(mergedArray);
+//        quickSort(mergedArray, 0, mergedArray.length - 1);
         //Step-3: Sort all the other arrays as we will be doing binarySearch
-        quickSort(starts, 0, starts.length-1);
-        quickSort(ends, 0, ends.length-1);
+//        quickSort(starts, 0, starts.length - 1);
+//        quickSort(ends, 0, ends.length-1);
+        Arrays.sort(starts);
+        Arrays.sort(ends);
         return getCountForEachPoint(starts, ends, points, mergedArray);
     }
 
@@ -52,23 +57,42 @@ public class PointsAndSegments {
             copyOfPoints[i] = points[i];
         }
         // We need a copy becuase sorting will change the sequence in main array
-        quickSort(copyOfPoints, 0, copyOfPoints.length-1);
+        // TODO: Resolve bug in quicksort
+//        quickSort(copyOfPoints, 0, copyOfPoints.length-1);
+        Arrays.sort(copyOfPoints);
 
+        int startsIndex = 0;
+        int endsIndex = 0;
+        int pointsIndex = 0;
         for (int i= 0; i < mergedArray.length; i++) {
+//            System.out.println("i is "+i);
             int point = mergedArray[i];
-            if (searchInArray(starts, 0, starts.length-1, point)) {
-                counter ++; // If point present in starts array
-            } else if (searchInArray(ends, 0, ends.length-1, point)) {
-                counter --; // If point present in ends array
+            if (startsIndex<starts.length && starts[startsIndex]==point) { // I was missing the second condition
+                counter++; // If point present in starts array
+//                System.out.println("count is "+counter);
+                startsIndex++;
+                continue;
             }
-            if (searchInArray(copyOfPoints, 0, copyOfPoints.length-1, point)) {
+//            System.out.println("points["+pointsIndex+"] is "+points[pointsIndex]);
+            if (pointsIndex<points.length && copyOfPoints[pointsIndex]==point) {
                 // If point is the part of the points
                 pointToCount.put(point, counter);
+                pointsIndex++;
+                continue;
+            }
+            if (endsIndex<ends.length && ends[endsIndex]==point) {
+                counter--; // If point present in ends array
+                endsIndex++;
+                continue;
             }
         }
 
+//        for(int key: pointToCount.keySet()) {
+//            System.out.println(key+": "+pointToCount.get(key));
+//        }
+
         for (int i = 0; i < points.length; i++) {
-            countArray[i] = pointToCount.get(points[i]);
+            countArray[i] = pointToCount.get(points[i])!=null?pointToCount.get(points[i]):0;
         }
         return countArray;
     }
