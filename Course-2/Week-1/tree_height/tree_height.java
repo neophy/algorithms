@@ -122,23 +122,12 @@ public class tree_height {
             if (node.getChildren().isEmpty()) {
                 return 1;
             }
+            int maxHeight = Integer.MIN_VALUE;
 
-            Node leftNode = node.getChildren().get(0);
-            Node rightNode = node.getChildren().get(1);
-            int leftMaxHeight;
-            int rightMaxHeight;
-
-            if (leftNode == null) {
-                leftMaxHeight = 0;
-            } else {
-                leftMaxHeight = maxHeight(leftNode);
+            for (Node child : node.getChildren()) {
+                maxHeight = Math.max(maxHeight(child), maxHeight);
             }
-            if (rightNode == null) {
-                rightMaxHeight = 0;
-            } else {
-                rightMaxHeight = maxHeight(rightNode);
-            }
-            return Math.max(leftMaxHeight, rightMaxHeight) + 1;
+            return maxHeight + 1;
         }
 	}
 
