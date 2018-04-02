@@ -78,50 +78,70 @@ public class JobQueue {
             startTime[currentJob] = endTime[0];
             endTime[0] += jobs[currentJob];
             currentJob ++;
-            buildMinHeap(endTime);
+            // IMP: We don't need to build heap each time (which takes O(n) time)
+            // because the endTime array is already a heap. Now, when we change the priority/endTime
+            // then we need to just heapify it (siftUp/siftDown)
+            siftDown(0,endTime.length); // log(n) time
         }
     }
 
-    // buildMinHeap the endTime array
-    // also, move the thread number in workersHeap Array
-    // such that endTime[i] gives the endTime of Thread workersHeap[i] and "not  'i' "
-    private void buildMinHeap(long[] endTime) {
-        int size = endTime.length;
-        for (int i = size/2; i >= 0; i--) {
-            siftDown(i, size);
-        }
-    }
-
+    // indexToBeShifted has its endTime increased so we need to put it to its correct place
+    // such that minimum heap properties are satisfied i.e. node with least endTime should be at upper levels
     private void siftDown(int indexToBeSifted, int size) {
-        int leftChildIndex = 2*indexToBeSifted+1;
-        int rightChildIndex = 2*indexToBeSifted+2;
-        if (leftChildIndex <= size-1) {
-            if(endTime[indexToBeSifted] == endTime[leftChildIndex] &&
-                    workersHeap[indexToBeSifted] > workersHeap[leftChildIndex]) { // IMP: Was doing mistake of considering indexToBeShifted instead of
-                                                                                 // workersHeap[indexToBeSifted]
-                swapNodes(indexToBeSifted, leftChildIndex, workersHeap);
-                siftDown(leftChildIndex, size);
-            } else if (endTime[indexToBeSifted] > endTime[leftChildIndex]) {
-                swapNodes(indexToBeSifted, leftChildIndex, endTime);
-                swapNodes(indexToBeSifted, leftChildIndex, workersHeap);
-                siftDown(leftChildIndex, size);
-            }
+        long parent = endTime[indexToBeSifted];
+        long leftChild = endTime[2*indexToBeSifted+1];
+        long rightChild = endTime[2*indexToBeSifted+1];
+        // TODO: Complete it
+        // Case-1: Parent, left child and right child have same endTime
+        if (leftChild == rightChild && leftChild == parent) {
+            return;
+        }
+
+        // Case-2: Left child is the smallest of left, right child and parent
+        if (leftChild <= rightChild && leftChild < parent) {
+            swapNodes(indexToBeSifted, 2*indexToBeSifted+1,workersHeap);
+            siftDown(indexToBeSifted, size);
+        } else if (leftChild <= rightChild && leftChild == parent ) {
 
         }
 
-        if (rightChildIndex <= size-1) {
-              if (endTime[indexToBeSifted] == endTime[rightChildIndex] && workersHeap[indexToBeSifted] > workersHeap[rightChildIndex]) {
-                // As smaller index thread gets priority
-                swapNodes(indexToBeSifted, rightChildIndex, workersHeap);
-                // endTime values is not swapped as both have same values
-                siftDown(rightChildIndex, size);
-            } else if (endTime[indexToBeSifted] > endTime[rightChildIndex]) {
-                swapNodes(indexToBeSifted, rightChildIndex, endTime);
-                swapNodes(indexToBeSifted, rightChildIndex, workersHeap);
-                siftDown(rightChildIndex, size);
-            }
-        }
 
+
+
+
+
+
+
+
+//        if (leftChildIndex <= size-1) {
+//            if(endTime[indexToBeSifted] == endTime[leftChildIndex] &&
+//                    workersHeap[indexToBeSifted] > workersHeap[leftChildIndex]) { // IMP: Was doing mistake of considering indexToBeShifted instead of
+//                                                                                 // workersHeap[indexToBeSifted]
+//                swapNodes(indexToBeSifted, leftChildIndex, workersHeap);
+//                siftDown(leftChildIndex, size);
+//            } else if (endTime[indexToBeSifted] > endTime[leftChildIndex]) {
+//                swapNodes(indexToBeSifted, leftChildIndex, endTime);
+//                swapNodes(indexToBeSifted, leftChildIndex, workersHeap);
+//                siftDown(leftChildIndex, size);
+//            }
+//        }
+//
+//        if (rightChildIndex <= size-1) {
+//              if (endTime[indexToBeSifted] == endTime[rightChildIndex] && workersHeap[indexToBeSifted] > workersHeap[rightChildIndex]) {
+//                // As smaller index thread gets priority
+//                swapNodes(indexToBeSifted, rightChildIndex, workersHeap);
+//                // endTime values is not swapped as both have same values
+//                siftDown(rightChildIndex, size);
+//            } else if (endTime[indexToBeSifted] > endTime[rightChildIndex]) {
+//                swapNodes(indexToBeSifted, rightChildIndex, endTime);
+//                swapNodes(indexToBeSifted, rightChildIndex, workersHeap);
+//                siftDown(rightChildIndex, size);
+//            }
+//        }
+    }
+
+    private long getMinimum(long a, long b) {
+        return a <= b ? a : b;
     }
 
     private void swapNodes(int currentIndex, int parentIndex, long[] arr) {
