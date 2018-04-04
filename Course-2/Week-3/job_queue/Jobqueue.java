@@ -88,40 +88,52 @@ public class JobQueue {
     // indexToBeShifted has its endTime increased so we need to put it to its correct place
     // such that minimum heap properties are satisfied i.e. node with least endTime should be at upper levels
     private void siftDown(int indexToBeSifted, int size) {
-        long parent = endTime[indexToBeSifted];
-        long leftChild = endTime[2*indexToBeSifted+1];
-        long rightChild = endTime[2*indexToBeSifted+1];
-
+        int minIndex = indexToBeSifted;
         int leftChildIndex = 2*indexToBeSifted+1;
-        int rightChildIndex =2*indexToBeSifted+2;
+        int rightChildIndex = 2*indexToBeSifted+2;
 
-        if (leftChildIndex <= size-1 && leftChild < rightChild) {
-            if(endTime[indexToBeSifted] == endTime[leftChildIndex] &&
-                    workersHeap[indexToBeSifted] > workersHeap[leftChildIndex]) { // IMP: Was doing mistake of considering indexToBeShifted instead of
-                                                                                 // workersHeap[indexToBeSifted]
-                swapNodes(indexToBeSifted, leftChildIndex, workersHeap);
-                siftDown(leftChildIndex, size);
-            } else if (endTime[indexToBeSifted] > endTime[leftChildIndex]) {
-                swapNodes(indexToBeSifted, leftChildIndex, endTime);
-                swapNodes(indexToBeSifted, leftChildIndex, workersHeap);
-                siftDown(leftChildIndex, size);
+        if (leftChildIndex >= size && rightChildIndex >=size) {
+            return;
+        }
+        if (leftChildIndex < size  && endTime[leftChildIndex] < endTime[minIndex]) {
+            minIndex = leftChildIndex;
+        }
+        if (rightChildIndex < size && endTime[rightChildIndex] < endTime[minIndex]) {
+            minIndex = rightChildIndex;
+        }
+
+        if (leftChildIndex < size && rightChildIndex >= size && endTime[leftChildIndex] == endTime[indexToBeSifted]) {
+            if (workersHeap[leftChildIndex] < workersHeap[indexToBeSifted]) {
+                minIndex = leftChildIndex;
             }
-        } else if (rightChildIndex <= size-1) {
-              if (endTime[indexToBeSifted] == endTime[rightChildIndex] && workersHeap[indexToBeSifted] > workersHeap[rightChildIndex]) {
-                // As smaller index thread gets priority
-                swapNodes(indexToBeSifted, rightChildIndex, workersHeap);
-                // endTime values is not swapped as both have same values
-                siftDown(rightChildIndex, size);
-            } else if (endTime[indexToBeSifted] > endTime[rightChildIndex]) {
-                swapNodes(indexToBeSifted, rightChildIndex, endTime);
-                swapNodes(indexToBeSifted, rightChildIndex, workersHeap);
-                siftDown(rightChildIndex, size);
+        } else if (rightChildIndex < size && leftChildIndex >= size && endTime[rightChildIndex] == endTime[indexToBeSifted]) {
+            if (workersHeap[rightChildIndex] < workersHeap[indexToBeSifted]) {
+                minIndex = rightChildIndex;
+            }
+        } else if (leftChildIndex < size && rightChildIndex < size ) {
+            if (endTime[leftChildIndex] == endTime[rightChildIndex] && endTime[leftChildIndex] < endTime[indexToBeSifted]) {
+                // If both left and right child have same endtime, thread with lower index will get priority
+                // IMP: Thread present at leftChildIndex in workersHeap might not be the one with lowest thread number.
+                // We will have to check workersHeap[leftChildIndex]
+                if (workersHeap[leftChildIndex] < workersHeap[rightChildIndex]) {
+                    minIndex = leftChildIndex;
+                } else {
+                    minIndex = rightChildIndex;
+                }
+            } else if (endTime[leftChildIndex] == endTime[rightChildIndex] && endTime[leftChildIndex] == endTime[indexToBeSifted]) {
+                if (workersHeap[leftChildIndex] < workersHeap[minIndex]) {
+                    minIndex = leftChildIndex;
+                } else if (workersHeap[rightChildIndex] < workersHeap[minIndex]) {
+                    minIndex = rightChildIndex;
+                }
             }
         }
-    }
 
-    private long getMinimum(long a, long b) {
-        return a <= b ? a : b;
+        if (indexToBeSifted != minIndex) {
+            swapNodes(indexToBeSifted, minIndex, endTime);
+            swapNodes(indexToBeSifted, minIndex, workersHeap);
+            siftDown(minIndex, size);
+        }
     }
 
     private void swapNodes(int currentIndex, int parentIndex, long[] arr) {
