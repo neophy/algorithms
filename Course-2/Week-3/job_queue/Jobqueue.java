@@ -121,9 +121,9 @@ public class JobQueue {
                     minIndex = rightChildIndex;
                 }
             } else if (endTime[leftChildIndex] == endTime[rightChildIndex] && endTime[leftChildIndex] == endTime[indexToBeSifted]) {
-                if (workersHeap[leftChildIndex] < workersHeap[minIndex]) {
+                if (workersHeap[leftChildIndex] < workersHeap[rightChildIndex]) {
                     minIndex = leftChildIndex;
-                } else if (workersHeap[rightChildIndex] < workersHeap[minIndex]) {
+                } else if (workersHeap[rightChildIndex] < workersHeap[rightChildIndex]{
                     minIndex = rightChildIndex;
                 }
             }
