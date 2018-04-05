@@ -88,51 +88,38 @@ public class JobQueue {
     // indexToBeShifted has its endTime increased so we need to put it to its correct place
     // such that minimum heap properties are satisfied i.e. node with least endTime should be at upper levels
     private void siftDown(int indexToBeSifted, int size) {
-        int minIndex = indexToBeSifted;
+       // case-1: no children
         int leftChildIndex = 2*indexToBeSifted+1;
         int rightChildIndex = 2*indexToBeSifted+2;
-
-        if (leftChildIndex >= size && rightChildIndex >=size) {
+        if (leftChildIndex >= size) {
             return;
         }
-        if (leftChildIndex < size  && endTime[leftChildIndex] < endTime[minIndex]) {
-            minIndex = leftChildIndex;
+
+        int minIndex = indexToBeSifted;
+        // case-2: only left child exists
+        if (leftChildIndex < size && rightChildIndex >= size) {
+            minIndex = getMinimumIndex(minIndex, leftChildIndex);
         }
-        if (rightChildIndex < size && endTime[rightChildIndex] < endTime[minIndex]) {
-            minIndex = rightChildIndex;
+        // case-3: both child exists
+        else if (rightChildIndex < size) {
+            minIndex = getMinimumIndex(minIndex, leftChildIndex);
+            minIndex = getMinimumIndex(minIndex, rightChildIndex);
         }
 
-        if (leftChildIndex < size && rightChildIndex >= size && endTime[leftChildIndex] == endTime[indexToBeSifted]) {
-            if (workersHeap[leftChildIndex] < workersHeap[indexToBeSifted]) {
-                minIndex = leftChildIndex;
-            }
-        } else if (rightChildIndex < size && leftChildIndex >= size && endTime[rightChildIndex] == endTime[indexToBeSifted]) {
-            if (workersHeap[rightChildIndex] < workersHeap[indexToBeSifted]) {
-                minIndex = rightChildIndex;
-            }
-        } else if (leftChildIndex < size && rightChildIndex < size ) {
-            if (endTime[leftChildIndex] == endTime[rightChildIndex] && endTime[leftChildIndex] < endTime[indexToBeSifted]) {
-                // If both left and right child have same endtime, thread with lower index will get priority
-                // IMP: Thread present at leftChildIndex in workersHeap might not be the one with lowest thread number.
-                // We will have to check workersHeap[leftChildIndex]
-                if (workersHeap[leftChildIndex] < workersHeap[rightChildIndex]) {
-                    minIndex = leftChildIndex;
-                } else {
-                    minIndex = rightChildIndex;
-                }
-            } else if (endTime[leftChildIndex] == endTime[rightChildIndex] && endTime[leftChildIndex] == endTime[indexToBeSifted]) {
-                if (workersHeap[leftChildIndex] < workersHeap[rightChildIndex]) {
-                    minIndex = leftChildIndex;
-                } else if (workersHeap[rightChildIndex] < workersHeap[rightChildIndex]{
-                    minIndex = rightChildIndex;
-                }
-            }
-        }
-
-        if (indexToBeSifted != minIndex) {
-            swapNodes(indexToBeSifted, minIndex, endTime);
-            swapNodes(indexToBeSifted, minIndex, workersHeap);
+        if (minIndex != indexToBeSifted) {
+            swapNodes(minIndex, indexToBeSifted, endTime);
+            swapNodes(minIndex, indexToBeSifted, workersHeap);
             siftDown(minIndex, size);
+        }
+    }
+
+    private int getMinimumIndex(int i1, int i2) {
+        if (endTime[i1] < endTime[i2]) {
+            return i1;
+        } else if (endTime[i1] == endTime[i2] && workersHeap[i1] < workersHeap[i2]) {
+            return i1;
+        } else {
+            return i2;
         }
     }
 
