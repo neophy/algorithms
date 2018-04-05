@@ -5,7 +5,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.StringTokenizer;
 
-// Note: This solution works fine but takes more time
+// Learning: Always write the pseudo code first. Don't think of cases at the time of coding. Do it beforehand.
 public class JobQueue {
     private int numWorkers;
     // The Jobs array contains the time of each Job
